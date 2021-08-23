@@ -36,7 +36,13 @@
 
 (defun gregorian-create-new-gabc()
   (interactive)
-    (message "TODO: Create a blank gabc file."))
+  (setq f (read-string "Enter file name:"))
+  (if (not (string= (car (last (split-string f "\\."))) "gabc"))
+      (setq f (concat f ".gabc")))
+  (if (file-exists-p f)
+      (message (concat  "File " (concat f " already exists")))
+    (with-temp-buffer (write-file f))
+    (find-file f)))
 
 (provide 'gregorian-mode)
 
