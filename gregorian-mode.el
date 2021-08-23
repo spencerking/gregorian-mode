@@ -27,7 +27,7 @@
 (define-generic-mode
   'gregorian-mode
   '()
-  'gregorian-keywords
+  gregorian-keywords
   (font-locks)
   '("\\.gabc$")
   nil
