@@ -91,68 +91,67 @@
 (defun gregorian-build-greg()
   ; Converts a greg to a gabc
   (interactive)
-    (setq f (file-name-nondirectory buffer-file-name))
-    (setq fname (file-name-sans-extension f))
-    (setq ext (file-name-extension f))
-    (if (not (string= "greg" ext))
-	(print "not greg")
-      (setq outfile (concat fname ".gabc"))
-      (goto-char (point-min))
-      (setq cont t)
-      (while cont
-	(let* ((lb (line-beginning-position))
+  (setq f (file-name-nondirectory buffer-file-name))
+  (setq fname (file-name-sans-extension f))
+  (setq ext (file-name-extension f))
+  (if (not (string= "greg" ext))
+      (print "not greg")
+    (setq outfile (concat fname ".gabc"))
+    (goto-char (point-min))
+    (setq cont t)
+    (while cont
+      (let* ((lb (line-beginning-position))
              (le (line-end-position))
              (ln (buffer-substring-no-properties lb le)))
-	  (if (not (string= ln "%%"))
-	      (append-to-file (concat ln "\n") nil outfile)
-	    (setq cont nil)
-	    (append-to-file (concat ln "\n") nil outfile))
-	  (forward-line 1)
-	  ))
-
-      (while (not (eobp))
+	(if (not (string= ln "%%"))
+	    (append-to-file (concat ln "\n") nil outfile)
+	  (setq cont nil)
+	  (append-to-file (concat ln "\n") nil outfile))
 	(forward-line 1)
-	(let* ((lb (line-beginning-position))
+	))
+
+    (while (not (eobp))
+      (forward-line 1)
+      (let* ((lb (line-beginning-position))
              (le (line-end-position))
              (ln (buffer-substring-no-properties lb le)))
-	  (setq notes (split-string ln))
-	  (forward-line 1)
-	  (setq lyrics (split-string (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-	  (forward-line 1)
-	  ;; TODO: Generalize this if statement
-	  (if (string= (car notes) "c4")
-	      (progn
-		(append-to-file (concat "(" (car notes) ") ") nil outfile)
-		(setq notes (cdr notes))
+	(setq notes (split-string ln))
+	(forward-line 1)
+	(setq lyrics (split-string (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+	(forward-line 1)
+	(if (string-match "\\`c[0-9]\\'" (car notes))
+	    (progn
+	      (append-to-file (concat "(" (car notes) ") ") nil outfile)
+	      (setq notes (cdr notes))
 	      )
-	    )
-
-	  ;; Interleave the notes and the lyrics like a traditional gabc file
-	  (setq line "")
-	  (while lyrics
-	    (if (not (string= (car lyrics) "-"))
-		(progn
-		  (if (string= (car lyrics) "*")
-		      (setq line (concat line (car lyrics) " (" (car notes) ")"))
-		    (setq line (concat line (car lyrics) "(" (car notes) ")")))
-		  (setq notes (cdr notes))
-		  (setq lyrics (cdr lyrics))
-		  )
-	      (setq line (concat line " "))
-	      (setq lyrics (cdr lyrics))
-	      )
-	    )
-
-	  ;; Add any additional notes
-	  (while notes
-	    (setq line (concat line " (" (car notes) ")"))
-	    (setq notes (cdr notes)))
-	  
-	  (append-to-file (concat line "\n") nil outfile)
 	  )
-	)
 
-      ))
+	;; Interleave the notes and the lyrics like a traditional gabc file
+	(setq line "")
+	(while lyrics
+	  (if (not (string= (car lyrics) "-"))
+	      (progn
+		;;(if (string= (car lyrics) "*")
+		 ;;   (setq line (concat line (car lyrics) " (" (car notes) ")"))
+		  (setq line (concat line (car lyrics) "(" (car notes) ")"))
+		(setq notes (cdr notes))
+		(setq lyrics (cdr lyrics))
+		)
+	    (setq line (concat line " "))
+	    (setq lyrics (cdr lyrics))
+	    )
+	  )
+
+	;; Add any additional notes
+	(while notes
+	  (setq line (concat line " (" (car notes) ")"))
+	  (setq notes (cdr notes)))
+	
+	(append-to-file (concat line "\n") nil outfile)
+	)
+      )
+
+    ))
 
 (defun gregorian-build()
   ; Build the score
