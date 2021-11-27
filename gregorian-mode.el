@@ -29,7 +29,7 @@
   '()
   gregorian-keywords
   (font-locks)
-  '("\\.gabc$")
+  '("\\.gabc$" "\\.greg$")
   nil
   "A mode for typesetting gregorian chant."
   )
@@ -166,9 +166,9 @@
     (shell-command (concat "lualatex --shell-escape " (file-name-base buffer-file-name) ".tex"))
     ;(call-process-shell-command (concat "lualatex --shell-escape " (file-name-base buffer-file-name) ".tex") nil 0)
     ;(when (not (get-buffer (concat (file-name-base buffer-file-name) ".pdf")))
-      (split-window-right)
+      ;; (split-window-right)
       (other-window 1)
-      (find-file (concat (file-name-base buffer-file-name) ".pdf"));)
+      ;; (find-file (concat (file-name-base buffer-file-name) ".pdf"));)
     ;; TODO: reload buffer on build if already open, do something like switch to the buffer and use revert-buffer
     )
   )
